@@ -1,13 +1,217 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useState } from "react";
+import Layout from "@/components/Layout";
+import InputForm from "@/components/InputForm";
+import ResearchPhase, { ResearchData } from "@/components/ResearchPhase";
+import ArticlePhase from "@/components/ArticlePhase";
+import { ToneType } from "@/components/ToneSelector";
+import { SEOSettingsData } from "@/components/SEOSettings";
+import { toast } from "@/components/ui/use-toast";
 
 const Index = () => {
+  const [isResearching, setIsResearching] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [researchData, setResearchData] = useState<ResearchData | null>(null);
+  const [generatedArticle, setGeneratedArticle] = useState<string | null>(null);
+
+  // Simulate the research process
+  const handleStartResearch = async (input: string) => {
+    setIsResearching(true);
+    setResearchData(null);
+    setGeneratedArticle(null);
+    
+    try {
+      // In a real application, this would be an API call
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Simulated research data
+      const mockResearchData: ResearchData = {
+        overview: `L'utilizzo di ChatGPT nel marketing rappresenta una delle applicazioni più innovative dell'intelligenza artificiale generativa nel settore. ChatGPT può essere impiegato per automatizzare e migliorare numerosi processi di marketing, dalla creazione di contenuti all'analisi dei dati, fino all'interazione diretta con i clienti.\n\nLe aziende stanno adottando questa tecnologia per ottimizzare le operazioni, ridurre i costi e migliorare l'engagement con i clienti. La versatilità di ChatGPT lo rende uno strumento prezioso per professionisti del marketing di ogni livello.`,
+        sources: [
+          { title: "Harvard Business Review: AI in Marketing", url: "https://hbr.org/topic/ai-and-machine-learning" },
+          { title: "OpenAI: ChatGPT for Business", url: "https://openai.com/enterprise" },
+          { title: "Marketing AI Institute", url: "https://www.marketingaiinstitute.com/" },
+          { title: "Forbes: AI Marketing Trends", url: "https://www.forbes.com/ai/" },
+        ],
+        keyInsights: [
+          "ChatGPT può generare contenuti di alta qualità per blog, social media e campagne email",
+          "L'AI può analizzare grandi volumi di dati per identificare trend e opportunità di marketing",
+          "Gli assistenti virtuali basati su ChatGPT migliorano il servizio clienti 24/7",
+          "Il prompt engineering è fondamentale per ottenere risultati ottimali da ChatGPT",
+          "L'integrazione di ChatGPT con altri strumenti di marketing crea workflow automatizzati potenti"
+        ],
+        statistics: [
+          "Il 60% delle aziende che utilizzano AI nel marketing ha registrato un aumento del ROI",
+          "Il tempo di produzione dei contenuti si riduce del 75% con l'uso di strumenti AI",
+          "Il 78% dei marketer prevede di aumentare gli investimenti in AI nei prossimi 2 anni",
+          "I chatbot AI possono gestire fino all'85% delle interazioni con i clienti senza intervento umano"
+        ],
+        trends: [
+          "Personalizzazione avanzata dei contenuti basata su dati utente",
+          "Marketing conversazionale tramite chatbot in tempo reale",
+          "Automatizzazione del content marketing con qualità sempre più elevata",
+          "Integrazione di AI generativa con sistemi CRM e piattaforme di analytics",
+          "Aumento della domanda di specialisti in prompt engineering"
+        ]
+      };
+      
+      setResearchData(mockResearchData);
+      toast({
+        title: "Ricerca completata",
+        description: "Abbiamo raccolto le informazioni necessarie per il tuo articolo."
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Errore durante la ricerca",
+        description: "Si è verificato un errore durante la ricerca. Riprova più tardi.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsResearching(false);
+    }
+  };
+
+  // Simulate article generation
+  const handleGenerateArticle = async (tone: ToneType, seoSettings: SEOSettingsData) => {
+    setIsGenerating(true);
+    
+    try {
+      // In a real application, this would be an API call
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      
+      // Simulated article content
+      const mockArticle = `# Come Usare ChatGPT per Rivoluzionare il Tuo Marketing
+
+## Introduzione al Marketing con ChatGPT
+
+Nel panorama digitale in rapida evoluzione, l'intelligenza artificiale sta ridefinendo le strategie di marketing tradizionali. ChatGPT, un modello linguistico avanzato sviluppato da OpenAI, è diventato uno strumento indispensabile per i professionisti del marketing che desiderano ottimizzare le loro attività e ottenere risultati migliori.
+
+Questo articolo esplora le modalità pratiche con cui puoi integrare ChatGPT nelle tue strategie di marketing per aumentare l'efficienza, migliorare l'engagement con i clienti e dare slancio ai tuoi risultati commerciali.
+
+## Creazione di Contenuti con l'Intelligenza Artificiale
+
+### Generazione di Blog Post Ottimizzati per SEO
+
+ChatGPT eccelle nella creazione di contenuti per blog informativi e coinvolgenti. Puoi utilizzarlo per:
+
+- Generare bozze complete di articoli su argomenti specifici
+- Sviluppare titoli accattivanti che attirano l'attenzione
+- Creare meta descrizioni ottimizzate per la SEO
+- Suggerire sottotitoli pertinenti per migliorare la struttura dell'articolo
+
+Le statistiche mostrano che il 60% delle aziende che utilizzano l'AI nel marketing ha registrato un aumento significativo del ROI, con una riduzione del 75% nel tempo necessario per la produzione di contenuti.
+
+### Social Media e Campagne Email
+
+Per i social media, ChatGPT può:
+
+- Creare post accattivanti adattati a diverse piattaforme
+- Suggerire hashtag pertinenti per aumentare la visibilità
+- Generare testi persuasivi per le inserzioni pubblicitarie
+- Proporre idee per contenuti visivi e descrizioni
+
+Nelle campagne email, l'AI può personalizzare i messaggi su larga scala, aumentando l'apertura e i tassi di conversione.
+
+## Ottimizzazione delle Strategie di Customer Service
+
+Con l'implementazione di chatbot basati su ChatGPT, le aziende possono:
+
+1. Offrire supporto clienti 24/7 senza costi aggiuntivi
+2. Rispondere istantaneamente alle domande frequenti
+3. Raccogliere feedback preziosi in tempo reale
+4. Indirizzare le richieste complesse agli operatori umani
+
+I chatbot AI possono gestire fino all'85% delle interazioni con i clienti senza intervento umano, liberando risorse per attività più strategiche.
+
+## Data Analysis per Decisioni di Marketing Informate
+
+ChatGPT può aiutare nell'analisi dei dati:
+
+- Interpretando report di marketing complessi
+- Identificando tendenze emergenti nel comportamento dei consumatori
+- Fornendo suggerimenti per ottimizzare le campagne in corso
+- Presentando dati complessi in formato facilmente comprensibile
+
+Il 78% dei marketer prevede di aumentare gli investimenti in AI nei prossimi due anni, riconoscendo il valore aggiunto di queste tecnologie.
+
+## Best Practices per l'Utilizzo di ChatGPT nel Marketing
+
+Per massimizzare i risultati:
+
+- Affinare le competenze di prompt engineering per ottenere output più precisi
+- Combinare l'intelligenza artificiale con l'intuizione umana
+- Mantenere un controllo umano sulla qualità dei contenuti generati
+- Integrare ChatGPT con altri strumenti di marketing per workflow automatizzati
+
+## Tendenze Future nel Marketing AI
+
+Le tendenze emergenti includono:
+
+- Personalizzazione avanzata basata su dati utente individuali
+- Marketing conversazionale in tempo reale
+- Integrazione di AI generativa con sistemi CRM
+- Aumento della domanda di specialisti in prompt engineering
+
+## Conclusione
+
+L'integrazione di ChatGPT nelle strategie di marketing non è più un'opzione futuristica, ma una necessità competitiva nel panorama digitale attuale. Le aziende che adottano queste tecnologie oggi saranno meglio posizionate per il successo domani.
+
+Inizia con progetti pilota specifici, misura i risultati e scala gradualmente l'implementazione di ChatGPT nel tuo marketing mix per rimanere all'avanguardia nel tuo settore.`;
+      
+      setGeneratedArticle(mockArticle);
+      toast({
+        title: "Articolo generato",
+        description: "Il tuo articolo SEO è stato generato con successo."
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Errore durante la generazione",
+        description: "Si è verificato un errore durante la generazione dell'articolo. Riprova più tardi.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <Layout>
+      <div className="max-w-6xl mx-auto space-y-12">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl md:text-5xl font-bold ai-gradient-text">
+            ContentCraft AI Genius
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Genera articoli di blog ottimizzati per la SEO in due fasi: ricerca approfondita e creazione di contenuti di qualità.
+          </p>
+        </div>
+        
+        {!researchData && (
+          <InputForm 
+            onSubmit={handleStartResearch} 
+            isLoading={isResearching} 
+          />
+        )}
+        
+        {(isResearching || researchData) && (
+          <ResearchPhase 
+            isLoading={isResearching} 
+            researchData={researchData} 
+          />
+        )}
+        
+        {researchData && (
+          <ArticlePhase 
+            researchData={researchData}
+            isGenerating={isGenerating}
+            onGenerate={handleGenerateArticle}
+            generatedArticle={generatedArticle}
+          />
+        )}
       </div>
-    </div>
+    </Layout>
   );
 };
 
