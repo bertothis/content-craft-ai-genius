@@ -30,25 +30,27 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Cosa vuoi scrivere oggi?</CardTitle>
-        <CardDescription>
+    <Card className="w-full glass-card overflow-hidden">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">
+          Cosa vuoi scrivere oggi?
+        </CardTitle>
+        <CardDescription className="text-base text-purple-900/70">
           Descrivi l'argomento del tuo articolo in modo dettagliato
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <Textarea
             placeholder="Es. Voglio un articolo su come usare ChatGPT per fare marketing, focalizzandosi sui casi d'uso più innovativi..."
-            className="min-h-32 resize-y"
+            className="min-h-32 resize-y bg-white/50 backdrop-blur-sm border-purple-100 rounded-xl focus:border-purple-200 focus:ring-purple-200/50 text-purple-900 placeholder:text-purple-400"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={isLoading}
           />
           <Button 
             type="submit" 
-            className="w-full ai-gradient-bg hover:opacity-90"
+            className="button-gradient w-full"
             disabled={isLoading}
           >
             {isLoading ? (
