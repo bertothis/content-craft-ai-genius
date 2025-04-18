@@ -1,12 +1,11 @@
-
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
-import InputForm from "@/components/InputForm";
-import ResearchPhase, { ResearchData } from "@/components/ResearchPhase";
-import ArticlePhase from "@/components/ArticlePhase";
+import { ResearchData } from "@/components/ResearchPhase";
 import { ToneType } from "@/components/ToneSelector";
 import { SEOSettingsData } from "@/components/SEOSettings";
 import { toast } from "@/components/ui/use-toast";
+import Header from "./home/Header";
+import GenerationProgress from "./home/GenerationProgress";
 
 const Index = () => {
   const [isResearching, setIsResearching] = useState(false);
@@ -14,7 +13,6 @@ const Index = () => {
   const [researchData, setResearchData] = useState<ResearchData | null>(null);
   const [generatedArticle, setGeneratedArticle] = useState<string | null>(null);
 
-  // Simulate the research process
   const handleStartResearch = async (input: string) => {
     setIsResearching(true);
     setResearchData(null);
@@ -72,7 +70,6 @@ const Index = () => {
     }
   };
 
-  // Simulate article generation
   const handleGenerateArticle = async (tone: ToneType, seoSettings: SEOSettingsData) => {
     setIsGenerating(true);
     
@@ -179,37 +176,15 @@ Inizia con progetti pilota specifici, misura i risultati e scala gradualmente l'
   return (
     <Layout>
       <div className="max-w-6xl mx-auto space-y-12">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold ai-gradient-text">
-            ContentCraft AI Genius
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Genera articoli di blog ottimizzati per la SEO in due fasi: ricerca approfondita e creazione di contenuti di qualità.
-          </p>
-        </div>
-        
-        {!researchData && (
-          <InputForm 
-            onSubmit={handleStartResearch} 
-            isLoading={isResearching} 
-          />
-        )}
-        
-        {(isResearching || researchData) && (
-          <ResearchPhase 
-            isLoading={isResearching} 
-            researchData={researchData} 
-          />
-        )}
-        
-        {researchData && (
-          <ArticlePhase 
-            researchData={researchData}
-            isGenerating={isGenerating}
-            onGenerate={handleGenerateArticle}
-            generatedArticle={generatedArticle}
-          />
-        )}
+        <Header />
+        <GenerationProgress
+          isResearching={isResearching}
+          isGenerating={isGenerating}
+          researchData={researchData}
+          generatedArticle={generatedArticle}
+          onStartResearch={handleStartResearch}
+          onGenerateArticle={handleGenerateArticle}
+        />
       </div>
     </Layout>
   );
