@@ -3,14 +3,18 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Brain, ArrowLeft } from 'lucide-react';
+import { Brain, ArrowLeft, Edit } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 const ElDirector = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedArticle, setEditedArticle] = useState<string>('');
   const articleContent = location.state?.articleContent;
 
   useEffect(() => {
@@ -39,14 +43,41 @@ Analisi Tecnica del Contenuto:
 - Includere metriche quantitative per supportare le affermazioni
 - Espandere la sezione sulle limitazioni tecniche
 
-Nel complesso, l'articolo è ben strutturato ma potrebbe beneficiare di un maggiore rigore tecnico in alcune sezioni specifiche.`;
+MODIFICHE PROPOSTE:
+
+${articleContent.replace(
+  "ChatGPT può generare contenuti di alta qualità",
+  "ChatGPT, basato sull'architettura GPT-3.5/4, può generare contenuti di alta qualità attraverso tecniche avanzate di NLP"
+).replace(
+  "L'AI può analizzare grandi volumi di dati",
+  "L'AI, attraverso algoritmi di deep learning e analisi predittiva, può processare e analizzare grandi volumi di dati"
+)}
+`;
       
       setAnalysis(mockAnalysis);
+      setEditedArticle(articleContent);
       setIsAnalyzing(false);
     }, 3000);
 
     return () => clearTimeout(timer);
   }, [articleContent, navigate]);
+
+  const handleModifyText = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveChanges = () => {
+    navigate('/', { 
+      state: { 
+        modifiedArticle: editedArticle,
+        source: 'el-director'
+      } 
+    });
+    toast({
+      title: "Modifiche applicate",
+      description: "Le modifiche suggerite da El Director sono state applicate all'articolo."
+    });
+  };
 
   return (
     <div className="container mx-auto py-8 max-w-4xl space-y-6">
@@ -84,8 +115,28 @@ Nel complesso, l'articolo è ben strutturato ma potrebbe beneficiare di un maggi
               </div>
             </div>
           ) : (
-            <div className="prose prose-slate max-w-none">
-              <pre className="whitespace-pre-wrap font-sans">{analysis}</pre>
+            <div className="space-y-6">
+              <div className="prose prose-slate max-w-none">
+                <pre className="whitespace-pre-wrap font-sans">{analysis}</pre>
+              </div>
+              
+              {isEditing ? (
+                <div className="space-y-4">
+                  <Textarea
+                    value={editedArticle}
+                    onChange={(e) => setEditedArticle(e.target.value)}
+                    className="min-h-[300px] font-mono text-sm"
+                  />
+                  <Button onClick={handleSaveChanges} className="ai-gradient-bg">
+                    Applica Modifiche
+                  </Button>
+                </div>
+              ) : (
+                <Button onClick={handleModifyText} className="ai-gradient-bg">
+                  <Edit className="mr-2 h-4 w-4" />
+                  Modifica Testo
+                </Button>
+              )}
             </div>
           )}
         </CardContent>

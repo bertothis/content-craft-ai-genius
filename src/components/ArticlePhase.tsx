@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, Eye, Code, Copy, FileDown, Brain, Pencil, Save } from 'lucide-react';
 import { toast } from "@/components/ui/use-toast";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Textarea } from "@/components/ui/textarea";
 import ToneSelector, { ToneType } from './ToneSelector';
 import SEOSettings, { SEOSettingsData } from './SEOSettings';
@@ -25,8 +25,11 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
   generatedArticle
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
-  const [editedArticle, setEditedArticle] = useState(generatedArticle || '');
+  const [editedArticle, setEditedArticle] = useState(
+    location.state?.modifiedArticle || generatedArticle || ''
+  );
   const [tone, setTone] = useState<ToneType>('datapizza');
   const [seoSettings, setSEOSettings] = useState<SEOSettingsData>({
     mainKeyword: '',
@@ -35,6 +38,14 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
     wordCount: 1200,
     keywordDensity: 2.0
   });
+
+  useEffect(() => {
+    if (location.state?.modifiedArticle && location.state?.source === 'el-director') {
+      setEditedArticle(location.state.modifiedArticle);
+      // Clear the location state to prevent re-applying on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleGenerateArticle = () => {
     if (!seoSettings.mainKeyword.trim()) {
@@ -85,7 +96,6 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
       setIsEditing(false);
     } else {
       setIsEditing(true);
-      setEditedArticle(generatedArticle || '');
     }
   };
 
