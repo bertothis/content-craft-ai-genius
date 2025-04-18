@@ -1,12 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Brain, ArrowLeft, Edit } from 'lucide-react';
+import { Brain, ArrowLeft, Edit, Copy, Check } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
-import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const LOADING_MESSAGES = [
   "El director sta pensando",
@@ -24,6 +23,8 @@ const ElDirector = () => {
   const [loadingMessage, setLoadingMessage] = useState(LOADING_MESSAGES[0]);
   const [isEditing, setIsEditing] = useState(false);
   const [editedArticle, setEditedArticle] = useState<string>('');
+  const [showCopyDialog, setShowCopyDialog] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const articleContent = location.state?.articleContent;
 
   useEffect(() => {
@@ -95,7 +96,26 @@ const ElDirector = () => {
     setIsEditing(true);
   };
 
+  const handleCopyText = async () => {
+    try {
+      await navigator.clipboard.writeText(editedArticle);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+      toast({
+        title: "Testo copiato!",
+        description: "Il testo modificato è stato copiato negli appunti."
+      });
+    } catch (err) {
+      toast({
+        title: "Errore",
+        description: "Non è stato possibile copiare il testo.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleSaveChanges = () => {
+    setShowCopyDialog(true);
     navigate('/', { 
       state: { 
         modifiedArticle: editedArticle,
@@ -185,6 +205,35 @@ const ElDirector = () => {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={showCopyDialog} onOpenChange={setShowCopyDialog}>
+        <DialogContent className="glass-card border-none">
+          <DialogHeader>
+            <DialogTitle className="ai-gradient-text">Testo Modificato</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 space-y-4">
+            <div className="p-6 rounded-xl bg-gradient-to-br from-white/80 to-white/30 backdrop-blur-md border border-white/20 shadow-lg prose prose-slate max-w-none">
+              <div dangerouslySetInnerHTML={{ __html: editedArticle }} />
+            </div>
+            <Button
+              onClick={handleCopyText}
+              className="w-full ai-gradient-bg hover:scale-105 transition-all duration-200"
+            >
+              {isCopied ? (
+                <>
+                  <Check className="mr-2 h-4 w-4" />
+                  Copiato!
+                </>
+              ) : (
+                <>
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copia Testo
+                </>
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
