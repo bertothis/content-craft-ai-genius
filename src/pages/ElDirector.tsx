@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +12,7 @@ const LOADING_MESSAGES = [
   "El director ha trovato un typo che non gli è piaciuto",
   "El director è felice",
   "El director esta comendo tapas",
-  "El director ha finido"
+  "El director ha finito"
 ];
 
 const ElDirector = () => {
@@ -56,7 +55,7 @@ const ElDirector = () => {
 
   const generateAnalysis = (content: string) => {
     return `
-Analisi Tecnica del Contenuto:
+• Analisi Tecnica del Contenuto:
 
 • Precisione Tecnica:
   - Il contenuto mostra una buona comprensione generale dell'argomento
@@ -73,7 +72,10 @@ Analisi Tecnica del Contenuto:
   - Includere metriche quantitative a supporto delle affermazioni
   - Espandere la sezione sulle limitazioni tecniche
 
-• MODIFICHE PROPOSTE:`;
+• Modifiche Proposte:
+  - "ChatGPT può generare contenuti di alta qualità" → "ChatGPT, basato sull'architettura GPT-3.5/4, può generare contenuti di alta qualità attraverso tecniche avanzate di NLP"
+  - "L'AI può analizzare grandi volumi di dati" → "L'AI, attraverso algoritmi di deep learning e analisi predittiva, può processare e analizzare grandi volumi di dati";
+  `;
   };
 
   const applyChanges = (content: string) => {
