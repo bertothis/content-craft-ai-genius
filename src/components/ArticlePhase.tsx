@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Eye, Code, Copy, FileDown } from 'lucide-react';
+import { FileText, Eye, Code, Copy, FileDown, Brain, Pencil, Save } from 'lucide-react';
 import { toast } from "@/components/ui/use-toast";
+import { useNavigate } from 'react-router-dom';
+import { Textarea } from "@/components/ui/textarea";
 import ToneSelector, { ToneType } from './ToneSelector';
 import SEOSettings, { SEOSettingsData } from './SEOSettings';
 import { ResearchData } from './ResearchPhase';
@@ -22,6 +24,9 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
   onGenerate,
   generatedArticle
 }) => {
+  const navigate = useNavigate();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedArticle, setEditedArticle] = useState(generatedArticle || '');
   const [tone, setTone] = useState<ToneType>('datapizza');
   const [seoSettings, setSEOSettings] = useState<SEOSettingsData>({
     mainKeyword: '',
@@ -66,6 +71,28 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
+  };
+
+  const handleEditToggle = () => {
+    if (isEditing) {
+      // Save changes
+      if (editedArticle !== generatedArticle) {
+        toast({
+          title: "Modifiche salvate",
+          description: "Le modifiche all'articolo sono state salvate con successo."
+        });
+      }
+      setIsEditing(false);
+    } else {
+      setIsEditing(true);
+      setEditedArticle(generatedArticle || '');
+    }
+  };
+
+  const handleConsultDirector = () => {
+    navigate('/el-director', { 
+      state: { articleContent: isEditing ? editedArticle : generatedArticle } 
+    });
   };
 
   if (!researchData) {
@@ -115,34 +142,68 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
                 <ArticleSkeleton />
               ) : generatedArticle ? (
                 <div className="space-y-4">
-                  <Tabs defaultValue="preview">
+                  <Tabs defaultValue={isEditing ? "markdown" : "preview"}>
                     <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="preview" className="flex items-center">
+                      <TabsTrigger 
+                        value="preview" 
+                        className="flex items-center"
+                        disabled={isEditing}
+                      >
                         <Eye className="mr-2 h-4 w-4" /> Anteprima
                       </TabsTrigger>
-                      <TabsTrigger value="markdown" className="flex items-center">
+                      <TabsTrigger 
+                        value="markdown" 
+                        className="flex items-center"
+                      >
                         <Code className="mr-2 h-4 w-4" /> Markdown
                       </TabsTrigger>
                     </TabsList>
                     <TabsContent value="preview" className="pt-4">
                       <div 
                         className="prose prose-sm md:prose-base max-w-none"
-                        dangerouslySetInnerHTML={{ __html: generatedArticle.replace(/\n/g, '<br />') }}
+                        dangerouslySetInnerHTML={{ 
+                          __html: (isEditing ? editedArticle : generatedArticle).replace(/\n/g, '<br />') 
+                        }}
                       />
                     </TabsContent>
                     <TabsContent value="markdown" className="pt-4">
-                      <pre className="bg-gray-100 p-4 rounded-md overflow-auto max-h-[60vh] text-sm">
-                        {generatedArticle}
-                      </pre>
+                      {isEditing ? (
+                        <Textarea
+                          value={editedArticle}
+                          onChange={(e) => setEditedArticle(e.target.value)}
+                          className="min-h-[60vh] font-mono text-sm"
+                        />
+                      ) : (
+                        <pre className="bg-gray-100 p-4 rounded-md overflow-auto max-h-[60vh] text-sm">
+                          {generatedArticle}
+                        </pre>
+                      )}
                     </TabsContent>
                   </Tabs>
                   
-                  <div className="flex space-x-2">
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleEditToggle}
+                      className="flex items-center"
+                    >
+                      {isEditing ? (
+                        <>
+                          <Save className="mr-2 h-4 w-4" /> Salva
+                        </>
+                      ) : (
+                        <>
+                          <Pencil className="mr-2 h-4 w-4" /> Modifica
+                        </>
+                      )}
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={copyToClipboard}
                       className="flex items-center"
+                      disabled={isEditing}
                     >
                       <Copy className="mr-2 h-4 w-4" /> Copia
                     </Button>
@@ -151,8 +212,18 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
                       size="sm"
                       onClick={downloadArticle}
                       className="flex items-center"
+                      disabled={isEditing}
                     >
                       <FileDown className="mr-2 h-4 w-4" /> Scarica
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleConsultDirector}
+                      className="flex items-center ml-auto"
+                      disabled={isEditing}
+                    >
+                      <Brain className="mr-2 h-4 w-4" /> Chiama El Director
                     </Button>
                   </div>
                 </div>
