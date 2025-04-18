@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,7 +76,7 @@ const ElDirector = () => {
 • Modifiche Proposte:
   - "ChatGPT può generare contenuti di alta qualità" → "ChatGPT, basato sull'architettura GPT-3.5/4, può generare contenuti di alta qualità attraverso tecniche avanzate di NLP"
   - "L'AI può analizzare grandi volumi di dati" → "L'AI, attraverso algoritmi di deep learning e analisi predittiva, può processare e analizzare grandi volumi di dati";
-  `;
+`;
   };
 
   const applyChanges = (content: string) => {
@@ -112,17 +113,22 @@ const ElDirector = () => {
       <Button 
         variant="outline" 
         onClick={() => navigate(-1)}
-        className="mb-6"
+        className="mb-6 hover:scale-105 transition-transform duration-200"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Torna all'articolo
       </Button>
 
-      <Card>
-        <CardHeader>
+      <Card className="glass-card border-none shadow-2xl">
+        <CardHeader className="space-y-4">
           <CardTitle className="flex items-center space-x-2">
-            <Brain className="h-6 w-6 text-brand-600" />
-            <span>El Director - Analisi Tecnica</span>
+            <div className="relative">
+              <Brain className="h-6 w-6 text-brand-600" />
+              <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-brand-500 animate-ping" />
+            </div>
+            <span className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent font-bold">
+              El Director - Analisi Tecnica
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -130,39 +136,47 @@ const ElDirector = () => {
             <div className="space-y-8">
               <div className="flex items-center justify-center py-12">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-full bg-brand-100 flex items-center justify-center animate-pulse">
-                    <Brain className="h-12 w-12 text-brand-600" />
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                    <Brain className="h-12 w-12 text-brand-600 animate-pulse" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-brand-500 animate-ping" />
+                  <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 animate-ping" />
                 </div>
               </div>
-              <div className="text-center text-lg font-medium text-brand-600">
+              <div className="text-center text-lg font-medium bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent animate-pulse">
                 {loadingMessage}
               </div>
               <div className="space-y-3">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
+                <Skeleton className="h-4 w-3/4 bg-gradient-to-r from-purple-500/20 to-pink-500/20" />
+                <Skeleton className="h-4 w-full bg-gradient-to-r from-purple-500/20 to-pink-500/20" />
+                <Skeleton className="h-4 w-5/6 bg-gradient-to-r from-purple-500/20 to-pink-500/20" />
               </div>
             </div>
           ) : (
             <div className="space-y-6">
               <div className="prose prose-slate max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: analysis || '' }} />
+                <pre className="whitespace-pre-wrap font-sans text-base leading-relaxed">
+                  {analysis}
+                </pre>
               </div>
               
               {isEditing ? (
-                <div className="space-y-4">
+                <div className="space-y-4 animate-fade-in">
                   <div 
-                    className="p-4 border rounded-md bg-white"
+                    className="p-6 rounded-xl bg-gradient-to-br from-white/80 to-white/30 backdrop-blur-md border border-white/20 shadow-lg prose prose-slate max-w-none"
                     dangerouslySetInnerHTML={{ __html: editedArticle }}
                   />
-                  <Button onClick={handleSaveChanges} className="ai-gradient-bg">
+                  <Button 
+                    onClick={handleSaveChanges} 
+                    className="ai-gradient-bg hover:scale-105 transition-all duration-200 shadow-lg"
+                  >
                     Applica Modifiche
                   </Button>
                 </div>
               ) : (
-                <Button onClick={handleModifyText} className="ai-gradient-bg">
+                <Button 
+                  onClick={handleModifyText} 
+                  className="ai-gradient-bg hover:scale-105 transition-all duration-200 shadow-lg"
+                >
                   <Edit className="mr-2 h-4 w-4" />
                   Modifica Testo
                 </Button>
