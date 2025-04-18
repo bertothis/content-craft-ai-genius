@@ -1,8 +1,10 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Database, FileSearch, Info, Link, TrendingUp } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 
 interface ResearchPhaseProps {
   isLoading: boolean;
@@ -18,6 +20,20 @@ export interface ResearchData {
 }
 
 const ResearchPhase: React.FC<ResearchPhaseProps> = ({ isLoading, researchData }) => {
+  const [newNote, setNewNote] = useState("");
+  const [customInsights, setCustomInsights] = useState<string[]>([]);
+
+  const handleAddNote = () => {
+    if (newNote.trim()) {
+      setCustomInsights([...customInsights, newNote.trim()]);
+      setNewNote("");
+      toast({
+        title: "Nota aggiunta",
+        description: "Il punto chiave è stato aggiunto con successo."
+      });
+    }
+  };
+
   if (isLoading) {
     return <ResearchSkeleton />;
   }
@@ -49,13 +65,40 @@ const ResearchPhase: React.FC<ResearchPhaseProps> = ({ isLoading, researchData }
               <FileSearch className="mr-2 h-5 w-5 text-purple-600" />
               Punti Chiave
             </CardTitle>
+            <CardDescription>
+              Aggiungi note personalizzate ai punti chiave identificati
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="list-disc list-inside space-y-2">
-              {researchData.keyInsights.map((insight, index) => (
-                <li key={index} className="text-gray-700">{insight}</li>
-              ))}
-            </ul>
+            <div className="space-y-4">
+              <ul className="list-disc list-inside space-y-2">
+                {researchData.keyInsights.map((insight, index) => (
+                  <li key={`ai-${index}`} className="text-gray-700">{insight}</li>
+                ))}
+                {customInsights.map((insight, index) => (
+                  <li key={`custom-${index}`} className="text-gray-700 font-medium">{insight}</li>
+                ))}
+              </ul>
+              
+              <div className="flex space-x-2">
+                <Input
+                  value={newNote}
+                  onChange={(e) => setNewNote(e.target.value)}
+                  placeholder="Aggiungi un punto chiave personalizzato..."
+                  className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleAddNote();
+                    }
+                  }}
+                />
+                <Button 
+                  onClick={handleAddNote}
+                  variant="outline"
+                  size="icon"
+                >+</Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
         

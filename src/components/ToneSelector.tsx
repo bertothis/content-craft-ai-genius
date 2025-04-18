@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Volume2 } from 'lucide-react';
 
-export type ToneType = 'informativo' | 'amichevole' | 'tecnico' | 'autorevole' | 'divulgativo';
+export type ToneType = 'datapizza' | 'formale';
 
 interface ToneSelectorProps {
   selectedTone: ToneType;
@@ -14,29 +14,14 @@ interface ToneSelectorProps {
 
 const tones: { value: ToneType; label: string; description: string }[] = [
   { 
-    value: 'informativo', 
-    label: 'Informativo', 
-    description: 'Neutrale e obiettivo, focalizzato sui fatti'
+    value: 'datapizza', 
+    label: 'Tono di Datapizza', 
+    description: 'Informale, diretto e coinvolgente, con un tocco di personalità'
   },
   { 
-    value: 'amichevole', 
-    label: 'Amichevole', 
-    description: 'Conversazionale e accessibile, come se parlassi con un amico'
-  },
-  { 
-    value: 'tecnico', 
-    label: 'Tecnico', 
-    description: 'Dettagliato e preciso, per un pubblico esperto'
-  },
-  { 
-    value: 'autorevole', 
-    label: 'Autorevole', 
-    description: 'Professionale e persuasivo, che trasmette fiducia'
-  },
-  { 
-    value: 'divulgativo', 
-    label: 'Divulgativo', 
-    description: 'Semplifica concetti complessi per un pubblico generale'
+    value: 'formale', 
+    label: 'Tono Formale', 
+    description: 'Professionale, autorevole e strutturato'
   }
 ];
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +11,7 @@ export interface SEOSettingsData {
   secondaryKeywords: string;
   metaDescription: string;
   wordCount: number;
+  keywordDensity: number;
 }
 
 interface SEOSettingsProps {
@@ -47,6 +47,25 @@ const SEOSettings: React.FC<SEOSettingsProps> = ({ settings, onChange }) => {
             onChange={(e) => handleChange('mainKeyword', e.target.value)}
             placeholder="Es. marketing con ChatGPT"
           />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="keywordDensity" className="flex justify-between">
+            <span>Keyword Density</span>
+            <span className="text-sm font-medium">{settings.keywordDensity}%</span>
+          </Label>
+          <Slider 
+            id="keywordDensity"
+            min={1}
+            max={5}
+            step={0.1}
+            value={[settings.keywordDensity]}
+            onValueChange={(values) => handleChange('keywordDensity', values[0])}
+            className="py-2"
+          />
+          <p className="text-xs text-muted-foreground">
+            La densità consigliata è tra 1% e 3%
+          </p>
         </div>
         
         <div className="space-y-2">

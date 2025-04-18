@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,12 +22,13 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
   onGenerate,
   generatedArticle
 }) => {
-  const [tone, setTone] = useState<ToneType>('informativo');
+  const [tone, setTone] = useState<ToneType>('datapizza');
   const [seoSettings, setSEOSettings] = useState<SEOSettingsData>({
     mainKeyword: '',
     secondaryKeywords: '',
     metaDescription: '',
-    wordCount: 1200
+    wordCount: 1200,
+    keywordDensity: 2.0
   });
 
   const handleGenerateArticle = () => {
