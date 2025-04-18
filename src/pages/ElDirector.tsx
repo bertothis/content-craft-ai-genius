@@ -8,11 +8,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 
+const LOADING_MESSAGES = [
+  "El director sta pensando",
+  "El director ha trovato un typo che non gli è piaciuto",
+  "El director è felice",
+  "El director esta comendo tapas",
+  "El director ha finido"
+];
+
 const ElDirector = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState(LOADING_MESSAGES[0]);
   const [isEditing, setIsEditing] = useState(false);
   const [editedArticle, setEditedArticle] = useState<string>('');
   const articleContent = location.state?.articleContent;
@@ -23,44 +32,61 @@ const ElDirector = () => {
       return;
     }
 
-    // Simuliamo l'analisi con un timer
-    const timer = setTimeout(() => {
-      const mockAnalysis = `
+    let currentMessageIndex = 0;
+    const messageInterval = setInterval(() => {
+      currentMessageIndex++;
+      if (currentMessageIndex < LOADING_MESSAGES.length) {
+        setLoadingMessage(LOADING_MESSAGES[currentMessageIndex]);
+      }
+    }, 2000);
+
+    const analysisTimer = setTimeout(() => {
+      const mockAnalysis = generateAnalysis(articleContent);
+      setAnalysis(mockAnalysis);
+      setEditedArticle(applyChanges(articleContent));
+      setIsAnalyzing(false);
+      clearInterval(messageInterval);
+    }, 10000);
+
+    return () => {
+      clearTimeout(analysisTimer);
+      clearInterval(messageInterval);
+    };
+  }, [articleContent, navigate]);
+
+  const generateAnalysis = (content: string) => {
+    return `
 Analisi Tecnica del Contenuto:
 
-1. Precisione Tecnica:
-- Il contenuto mostra una buona comprensione generale dell'argomento
-- Alcuni concetti potrebbero beneficiare di ulteriori approfondimenti tecnici
-- Suggerisco di aggiungere riferimenti a studi accademici recenti
+• Precisione Tecnica:
+  - Il contenuto mostra una buona comprensione generale dell'argomento
+  - Alcuni concetti potrebbero beneficiare di ulteriori approfondimenti tecnici
+  - Si suggerisce di aggiungere riferimenti a studi accademici recenti
 
-2. Chiarimenti Necessari:
-- La sezione sulla keyword density potrebbe essere supportata da dati statistici
-- I concetti di AI generativa meritano una spiegazione più approfondita
-- Consiglierei di includere esempi pratici di implementazione
+• Chiarimenti Necessari:
+  - La sezione sulla keyword density richiede supporto statistico
+  - I concetti di AI generativa necessitano una spiegazione più approfondita
+  - Si raccomanda di includere esempi pratici di implementazione
 
-3. Suggerimenti di Miglioramento:
-- Aggiungere riferimenti a framework specifici di machine learning
-- Includere metriche quantitative per supportare le affermazioni
-- Espandere la sezione sulle limitazioni tecniche
+• Suggerimenti di Miglioramento:
+  - Aggiungere riferimenti a framework specifici di machine learning
+  - Includere metriche quantitative a supporto delle affermazioni
+  - Espandere la sezione sulle limitazioni tecniche
 
-MODIFICHE PROPOSTE:
+• MODIFICHE PROPOSTE:`;
+  };
 
-${articleContent.replace(
-  "ChatGPT può generare contenuti di alta qualità",
-  "ChatGPT, basato sull'architettura GPT-3.5/4, può generare contenuti di alta qualità attraverso tecniche avanzate di NLP"
-).replace(
-  "L'AI può analizzare grandi volumi di dati",
-  "L'AI, attraverso algoritmi di deep learning e analisi predittiva, può processare e analizzare grandi volumi di dati"
-)}
-`;
-      
-      setAnalysis(mockAnalysis);
-      setEditedArticle(articleContent);
-      setIsAnalyzing(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [articleContent, navigate]);
+  const applyChanges = (content: string) => {
+    return content
+      .replace(
+        "ChatGPT può generare contenuti di alta qualità",
+        "<mark>ChatGPT, basato sull'architettura GPT-3.5/4, può generare contenuti di alta qualità attraverso tecniche avanzate di NLP</mark>"
+      )
+      .replace(
+        "L'AI può analizzare grandi volumi di dati",
+        "<mark>L'AI, attraverso algoritmi di deep learning e analisi predittiva, può processare e analizzare grandi volumi di dati</mark>"
+      );
+  };
 
   const handleModifyText = () => {
     setIsEditing(true);
@@ -108,6 +134,9 @@ ${articleContent.replace(
                   <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-brand-500 animate-ping" />
                 </div>
               </div>
+              <div className="text-center text-lg font-medium text-brand-600">
+                {loadingMessage}
+              </div>
               <div className="space-y-3">
                 <Skeleton className="h-4 w-3/4" />
                 <Skeleton className="h-4 w-full" />
@@ -117,15 +146,14 @@ ${articleContent.replace(
           ) : (
             <div className="space-y-6">
               <div className="prose prose-slate max-w-none">
-                <pre className="whitespace-pre-wrap font-sans">{analysis}</pre>
+                <div dangerouslySetInnerHTML={{ __html: analysis || '' }} />
               </div>
               
               {isEditing ? (
                 <div className="space-y-4">
-                  <Textarea
-                    value={editedArticle}
-                    onChange={(e) => setEditedArticle(e.target.value)}
-                    className="min-h-[300px] font-mono text-sm"
+                  <div 
+                    className="p-4 border rounded-md bg-white"
+                    dangerouslySetInnerHTML={{ __html: editedArticle }}
                   />
                   <Button onClick={handleSaveChanges} className="ai-gradient-bg">
                     Applica Modifiche
