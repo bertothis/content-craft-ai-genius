@@ -1,15 +1,16 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Eye, Code, Copy, FileDown, Brain, Pencil, Save } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Textarea } from "@/components/ui/textarea";
+import { ResearchData } from './ResearchPhase';
 import ToneSelector, { ToneType } from './ToneSelector';
 import SEOSettings, { SEOSettingsData } from './SEOSettings';
-import { ResearchData } from './ResearchPhase';
-import { Skeleton } from "@/components/ui/skeleton";
+import ArticlePreviewTabs from './article/ArticlePreviewTabs';
+import ArticleActions from './article/ArticleActions';
+import ArticleSkeleton from './article/ArticleSkeleton';
 
 interface ArticlePhaseProps {
   researchData: ResearchData | null;
@@ -42,7 +43,6 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
   useEffect(() => {
     if (location.state?.modifiedArticle && location.state?.source === 'el-director') {
       setEditedArticle(location.state.modifiedArticle);
-      // Clear the location state to prevent re-applying on refresh
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
@@ -56,7 +56,6 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
       });
       return;
     }
-    
     onGenerate(tone, seoSettings);
   };
 
@@ -86,7 +85,6 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
 
   const handleEditToggle = () => {
     if (isEditing) {
-      // Save changes
       if (editedArticle !== generatedArticle) {
         toast({
           title: "Modifiche salvate",
@@ -152,90 +150,20 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
                 <ArticleSkeleton />
               ) : generatedArticle ? (
                 <div className="space-y-4">
-                  <Tabs defaultValue={isEditing ? "markdown" : "preview"}>
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger 
-                        value="preview" 
-                        className="flex items-center"
-                        disabled={isEditing}
-                      >
-                        <Eye className="mr-2 h-4 w-4" /> Anteprima
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="markdown" 
-                        className="flex items-center"
-                      >
-                        <Code className="mr-2 h-4 w-4" /> Markdown
-                      </TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="preview" className="pt-4">
-                      <div 
-                        className="prose prose-sm md:prose-base max-w-none"
-                        dangerouslySetInnerHTML={{ 
-                          __html: (isEditing ? editedArticle : generatedArticle).replace(/\n/g, '<br />') 
-                        }}
-                      />
-                    </TabsContent>
-                    <TabsContent value="markdown" className="pt-4">
-                      {isEditing ? (
-                        <Textarea
-                          value={editedArticle}
-                          onChange={(e) => setEditedArticle(e.target.value)}
-                          className="min-h-[60vh] font-mono text-sm"
-                        />
-                      ) : (
-                        <pre className="bg-gray-100 p-4 rounded-md overflow-auto max-h-[60vh] text-sm">
-                          {generatedArticle}
-                        </pre>
-                      )}
-                    </TabsContent>
-                  </Tabs>
+                  <ArticlePreviewTabs
+                    content={generatedArticle}
+                    isEditing={isEditing}
+                    editedContent={editedArticle}
+                    onEditChange={setEditedArticle}
+                  />
                   
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleEditToggle}
-                      className="flex items-center"
-                    >
-                      {isEditing ? (
-                        <>
-                          <Save className="mr-2 h-4 w-4" /> Salva
-                        </>
-                      ) : (
-                        <>
-                          <Pencil className="mr-2 h-4 w-4" /> Modifica
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={copyToClipboard}
-                      className="flex items-center"
-                      disabled={isEditing}
-                    >
-                      <Copy className="mr-2 h-4 w-4" /> Copia
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={downloadArticle}
-                      className="flex items-center"
-                      disabled={isEditing}
-                    >
-                      <FileDown className="mr-2 h-4 w-4" /> Scarica
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleConsultDirector}
-                      className="flex items-center ml-auto"
-                      disabled={isEditing}
-                    >
-                      <Brain className="mr-2 h-4 w-4" /> Chiama El Director
-                    </Button>
-                  </div>
+                  <ArticleActions
+                    isEditing={isEditing}
+                    onEditToggle={handleEditToggle}
+                    onCopy={copyToClipboard}
+                    onDownload={downloadArticle}
+                    onConsultDirector={handleConsultDirector}
+                  />
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-64 text-center text-muted-foreground">
@@ -251,25 +179,5 @@ const ArticlePhase: React.FC<ArticlePhaseProps> = ({
     </div>
   );
 };
-
-const ArticleSkeleton = () => (
-  <div className="space-y-4">
-    <Skeleton className="h-8 w-3/4" />
-    <Skeleton className="h-4 w-full" />
-    <Skeleton className="h-4 w-full" />
-    <Skeleton className="h-4 w-2/3" />
-    <div className="py-2" />
-    <Skeleton className="h-6 w-1/2" />
-    <Skeleton className="h-4 w-full" />
-    <Skeleton className="h-4 w-full" />
-    <Skeleton className="h-4 w-full" />
-    <Skeleton className="h-4 w-4/5" />
-    <div className="py-2" />
-    <Skeleton className="h-6 w-1/2" />
-    <Skeleton className="h-4 w-full" />
-    <Skeleton className="h-4 w-full" />
-    <Skeleton className="h-4 w-3/4" />
-  </div>
-);
 
 export default ArticlePhase;
