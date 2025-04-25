@@ -9,7 +9,118 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      generated_articles: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          research_session_id: string | null
+          seo_settings: Json | null
+          tone: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          research_session_id?: string | null
+          seo_settings?: Json | null
+          tone: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          research_session_id?: string | null
+          seo_settings?: Json | null
+          tone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_articles_research_session_id_fkey"
+            columns: ["research_session_id"]
+            isOneToOne: false
+            referencedRelation: "research_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      github_research_data: {
+        Row: {
+          created_at: string | null
+          id: string
+          issues: Json[] | null
+          last_update: string | null
+          pull_requests: Json[] | null
+          repo_name: string
+          research_session_id: string | null
+          stars: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          issues?: Json[] | null
+          last_update?: string | null
+          pull_requests?: Json[] | null
+          repo_name: string
+          research_session_id?: string | null
+          stars?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          issues?: Json[] | null
+          last_update?: string | null
+          pull_requests?: Json[] | null
+          repo_name?: string
+          research_session_id?: string | null
+          stars?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "github_research_data_research_session_id_fkey"
+            columns: ["research_session_id"]
+            isOneToOne: false
+            referencedRelation: "research_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      research_sessions: {
+        Row: {
+          created_at: string | null
+          github_repo: string | null
+          id: string
+          input_text: string
+          key_insights: string[] | null
+          overview: string | null
+          sources: Json[] | null
+          statistics: string[] | null
+          trends: string[] | null
+        }
+        Insert: {
+          created_at?: string | null
+          github_repo?: string | null
+          id?: string
+          input_text: string
+          key_insights?: string[] | null
+          overview?: string | null
+          sources?: Json[] | null
+          statistics?: string[] | null
+          trends?: string[] | null
+        }
+        Update: {
+          created_at?: string | null
+          github_repo?: string | null
+          id?: string
+          input_text?: string
+          key_insights?: string[] | null
+          overview?: string | null
+          sources?: Json[] | null
+          statistics?: string[] | null
+          trends?: string[] | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

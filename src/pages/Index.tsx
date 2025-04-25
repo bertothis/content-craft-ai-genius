@@ -1,18 +1,20 @@
-
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
 import { ResearchData } from "@/components/ResearchPhase";
 import { ToneType } from "@/components/ToneSelector";
 import { SEOSettingsData } from "@/components/SEOSettings";
-import { toast } from "@/components/ui/use-toast";
 import Header from "./home/Header";
 import GenerationProgress from "./home/GenerationProgress";
+import { useResearchData } from "@/hooks/useResearchData";
 
 const Index = () => {
   const [isResearching, setIsResearching] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [researchData, setResearchData] = useState<ResearchData | null>(null);
   const [generatedArticle, setGeneratedArticle] = useState<string | null>(null);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  
+  const { saveResearchData, saveGeneratedArticle, isLoading } = useResearchData();
 
   const handleStartResearch = async (input: string, githubRepo?: string) => {
     setIsResearching(true);
@@ -20,10 +22,6 @@ const Index = () => {
     setGeneratedArticle(null);
     
     try {
-      // In a real application, this would be an API call
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      // Simulated research data
       const mockResearchData: ResearchData = {
         overview: `L'utilizzo di ChatGPT nel marketing rappresenta una delle applicazioni più innovative dell'intelligenza artificiale generativa nel settore. ChatGPT può essere impiegato per automatizzare e migliorare numerosi processi di marketing, dalla creazione di contenuti all'analisi dei dati, fino all'interazione diretta con i clienti.\n\nLe aziende stanno adottando questa tecnologia per ottimizzare le operazioni, ridurre i costi e migliorare l'engagement con i clienti. La versatilità di ChatGPT lo rende uno strumento prezioso per professionisti del marketing di ogni livello.`,
         sources: [
@@ -54,10 +52,7 @@ const Index = () => {
         ]
       };
       
-      // If GitHub repo is provided, add GitHub data
       if (githubRepo) {
-        // In a real application, this would call a backend API to fetch GitHub data
-        // For now we'll simulate that with mock data
         mockResearchData.githubData = {
           repo: githubRepo,
           issues: [
@@ -84,6 +79,11 @@ const Index = () => {
         title: "Ricerca completata",
         description: "Abbiamo raccolto le informazioni necessarie per il tuo articolo."
       });
+      
+      const sessionId = await saveResearchData(mockResearchData, githubRepo);
+      if (sessionId) {
+        setCurrentSessionId(sessionId);
+      }
     } catch (error) {
       console.error(error);
       toast({
@@ -100,10 +100,6 @@ const Index = () => {
     setIsGenerating(true);
     
     try {
-      // In a real application, this would be an API call
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      
-      // Simulated article content
       const mockArticle = `# Come Usare ChatGPT per Rivoluzionare il Tuo Marketing
 
 ## Introduzione al Marketing con ChatGPT
@@ -187,6 +183,10 @@ Inizia con progetti pilota specifici, misura i risultati e scala gradualmente l'
         title: "Articolo generato",
         description: "Il tuo articolo SEO è stato generato con successo."
       });
+      
+      if (currentSessionId) {
+        await saveGeneratedArticle(currentSessionId, mockArticle, tone, seoSettings);
+      }
     } catch (error) {
       console.error(error);
       toast({
@@ -204,7 +204,7 @@ Inizia con progetti pilota specifici, misura i risultati e scala gradualmente l'
       <div className="max-w-6xl mx-auto space-y-12">
         <Header />
         <GenerationProgress
-          isResearching={isResearching}
+          isResearching={isResearching || isLoading}
           isGenerating={isGenerating}
           researchData={researchData}
           generatedArticle={generatedArticle}
