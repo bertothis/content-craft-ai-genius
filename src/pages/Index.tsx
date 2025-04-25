@@ -6,6 +6,7 @@ import { SEOSettingsData } from "@/components/SEOSettings";
 import Header from "./home/Header";
 import GenerationProgress from "./home/GenerationProgress";
 import { useResearchData } from "@/hooks/useResearchData";
+import { toast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const [isResearching, setIsResearching] = useState(false);
