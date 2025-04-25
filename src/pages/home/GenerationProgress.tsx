@@ -12,7 +12,7 @@ interface GenerationProgressProps {
   isGenerating: boolean;
   researchData: ResearchData | null;
   generatedArticle: string | null;
-  onStartResearch: (input: string) => void;
+  onStartResearch: (input: string, githubRepo?: string) => void;
   onGenerateArticle: (tone: ToneType, seoSettings: SEOSettingsData) => void;
 }
 

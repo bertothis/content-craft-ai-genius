@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
 import { ResearchData } from "@/components/ResearchPhase";
@@ -13,7 +14,7 @@ const Index = () => {
   const [researchData, setResearchData] = useState<ResearchData | null>(null);
   const [generatedArticle, setGeneratedArticle] = useState<string | null>(null);
 
-  const handleStartResearch = async (input: string) => {
+  const handleStartResearch = async (input: string, githubRepo?: string) => {
     setIsResearching(true);
     setResearchData(null);
     setGeneratedArticle(null);
@@ -52,6 +53,31 @@ const Index = () => {
           "Aumento della domanda di specialisti in prompt engineering"
         ]
       };
+      
+      // If GitHub repo is provided, add GitHub data
+      if (githubRepo) {
+        // In a real application, this would call a backend API to fetch GitHub data
+        // For now we'll simulate that with mock data
+        mockResearchData.githubData = {
+          repo: githubRepo,
+          issues: [
+            { title: "Feature: Integrate AI content suggestions", url: `https://github.com/${githubRepo}/issues/42` },
+            { title: "Bug: ChatGPT API rate limiting issue", url: `https://github.com/${githubRepo}/issues/57` },
+            { title: "Enhancement: Improve prompt templates for marketing", url: `https://github.com/${githubRepo}/issues/83` }
+          ],
+          pullRequests: [
+            { title: "Add support for OpenAI's latest model", url: `https://github.com/${githubRepo}/pull/126` },
+            { title: "Improve marketing content generation with better prompts", url: `https://github.com/${githubRepo}/pull/145` }
+          ],
+          stars: 1280,
+          lastUpdate: "2 giorni fa"
+        };
+        
+        toast({
+          title: "Ricerca GitHub completata",
+          description: `Analisi della repo ${githubRepo} integrata nei risultati.`
+        });
+      }
       
       setResearchData(mockResearchData);
       toast({

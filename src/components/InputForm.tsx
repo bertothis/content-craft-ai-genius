@@ -5,14 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea";
 import { Search } from 'lucide-react';
 import { toast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
 
 interface InputFormProps {
-  onSubmit: (input: string) => void;
+  onSubmit: (input: string, githubRepo?: string) => void;
   isLoading: boolean;
 }
 
 const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
   const [input, setInput] = useState('');
+  const [githubRepo, setGithubRepo] = useState('');
+  const [useGithub, setUseGithub] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +29,21 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
       return;
     }
     
-    onSubmit(input);
+    if (useGithub && !isValidGithubRepo(githubRepo)) {
+      toast({
+        title: "Repository GitHub non valida",
+        description: "Inserisci un repository nel formato 'utente/repository'",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    onSubmit(input, useGithub ? githubRepo : undefined);
+  };
+
+  const isValidGithubRepo = (repo: string): boolean => {
+    // Simple validation for the format "username/repository"
+    return /^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/.test(repo);
   };
 
   return (
@@ -48,6 +65,39 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
             onChange={(e) => setInput(e.target.value)}
             disabled={isLoading}
           />
+          
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="useGithub"
+                checked={useGithub}
+                onChange={() => setUseGithub(!useGithub)}
+                className="rounded border-purple-300 text-purple-600 focus:ring-purple-500"
+                disabled={isLoading}
+              />
+              <label htmlFor="useGithub" className="text-sm font-medium text-purple-900">
+                Utilizza una repository GitHub per la ricerca approfondita
+              </label>
+            </div>
+            
+            {useGithub && (
+              <div className="pl-6 space-y-2 animate-fade-in">
+                <label htmlFor="githubRepo" className="text-sm font-medium text-purple-900">
+                  Repository GitHub (formato: utente/repository)
+                </label>
+                <Input
+                  id="githubRepo"
+                  value={githubRepo}
+                  onChange={(e) => setGithubRepo(e.target.value)}
+                  placeholder="es. facebook/react"
+                  className="bg-white/50 backdrop-blur-sm border-purple-100 focus:border-purple-200 focus:ring-purple-200/50 text-purple-900 placeholder:text-purple-400"
+                  disabled={isLoading}
+                />
+              </div>
+            )}
+          </div>
+          
           <Button 
             type="submit" 
             className="button-gradient w-full"
